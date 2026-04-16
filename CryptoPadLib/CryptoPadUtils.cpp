@@ -278,7 +278,7 @@ void FbcProcessFile(__in HANDLE hFileIn, __in HANDLE hFileOut, __in ULONGLONG cb
 
 void FbcEncryptFile(__in_z LPCWSTR pwszPlaintext, __in_z LPCWSTR pwszCiphertext, __in_bcount(cbKey) const unsigned char* pKey, __in size_t cbKey)
 {
-    CP_CIPHER prngCrypt;
+    CP_CIPHER* pCipher = new CP_CIPHER();
     HANDLE hFileIn = NULL;
     HANDLE hFileOut = NULL;
     BOOL fOK = FALSE;
@@ -326,12 +326,12 @@ void FbcEncryptFile(__in_z LPCWSTR pwszPlaintext, __in_z LPCWSTR pwszCiphertext,
         goto Error;
     }
 
-    if (!::ApplyNonce(pNonce, pKey, cbKey, &prngCrypt))
+    if (!::ApplyNonce(pNonce, pKey, cbKey, pCipher))
     {
         goto Error;
     }
 
-    ::FbcProcessFile(hFileIn, hFileOut, cbFileSize, &prngCrypt, EFCP_Encrypt);
+    ::FbcProcessFile(hFileIn, hFileOut, cbFileSize, pCipher, EFCP_Encrypt);
 
     goto Done;
 
@@ -339,6 +339,7 @@ Error:
     ::MessageBoxW(nullptr, L"Could not encrypt file", L"Encrypt Failed", MB_OK | MB_ICONERROR);
 
 Done:
+    delete pCipher;
     delete[] pNonce;
     ::CloseHandle(hFileIn);
     ::CloseHandle(hFileOut);
@@ -346,7 +347,7 @@ Done:
 
 void FbcDecryptFile(__in_z LPCWSTR pwszCiphertext, __in_z LPCWSTR pwszPlaintext, __in_bcount(cbKey) const unsigned char* pKey, __in size_t cbKey)
 {
-    CP_CIPHER prngCrypt;
+    CP_CIPHER* pCipher = new CP_CIPHER();
     HANDLE hFileIn = NULL;
     HANDLE hFileOut = NULL;
     BOOL fOK = FALSE;
@@ -382,18 +383,19 @@ void FbcDecryptFile(__in_z LPCWSTR pwszCiphertext, __in_z LPCWSTR pwszPlaintext,
         goto Error;
     }
 
-    if (!::ApplyNonce(pNonce, pKey, cbKey, &prngCrypt))
+    if (!::ApplyNonce(pNonce, pKey, cbKey, pCipher))
     {
         goto Error;
     }
 
-    ::FbcProcessFile(hFileIn, hFileOut, cbFileSize, &prngCrypt, EFCP_Decrypt);
+    ::FbcProcessFile(hFileIn, hFileOut, cbFileSize, pCipher, EFCP_Decrypt);
     goto Done;
 
 Error:
     ::MessageBoxW(nullptr, L"Could not decrypt file", L"Decrypt Failed", MB_OK | MB_ICONERROR);
 
 Done:
+    delete pCipher;
     delete[] pNonce;
     ::CloseHandle(hFileIn);
     ::CloseHandle(hFileOut);

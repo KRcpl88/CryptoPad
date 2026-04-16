@@ -25,9 +25,23 @@ jobs:
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
 
-      - name: Build CryptoPad
+      - name: Build CryptoPad library
         run: >
-          msbuild CryptoPad.sln
+          msbuild CryptoPadLib/CryptoPadLib.vcxproj
+          /p:Configuration=${{ matrix.configuration }}
+          /p:Platform=${{ matrix.platform }}
+          /p:PlatformToolset=v143
+
+      - name: Build CryptoPad app
+        run: >
+          msbuild CryptoPad/CryptoPad.vcxproj
+          /p:Configuration=${{ matrix.configuration }}
+          /p:Platform=${{ matrix.platform }}
+          /p:PlatformToolset=v143
+
+      - name: Build CryptoPad tests
+        run: >
+          msbuild CryptoPadLibTests/CryptoPadLibTests.vcxproj
           /p:Configuration=${{ matrix.configuration }}
           /p:Platform=${{ matrix.platform }}
           /p:PlatformToolset=v143
@@ -36,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-binaries-${{ matrix.platform }}-${{ matrix.configuration }}
-          path: ${{ matrix.platform }}/${{ matrix.configuration }}/CryptoPadLibTests.dll
+          path: CryptoPadLibTests/${{ matrix.platform }}/${{ matrix.configuration }}/CryptoPadLibTests.dll
 
   test:
     needs: build
