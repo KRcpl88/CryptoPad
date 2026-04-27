@@ -299,7 +299,7 @@ void EncryptFile(__in_z LPCWSTR pszFilename, __in_z const LPCWSTR pszPassword)
     ParsePasswordDispatch(pszPassword, CP_CIPHER::s_GetKeyWidth(), &pKey);
     ASSERT(CP_CIPHER::s_ValidKey(pKey, CP_CIPHER::s_GetKeyWidth()));
 
-    if (FAILED(::StringCchPrintfW(szEncryptedFile, ARRAYSIZE(szEncryptedFile), L"%s.spmbc", pszFilename)))
+    if (FAILED(::StringCchPrintfW(szEncryptedFile, ARRAYSIZE(szEncryptedFile), L"%s.aes", pszFilename)))
     {
         goto Error;
     }
@@ -330,10 +330,10 @@ void DecryptFile(__in_z LPCWSTR pszFilename, __in_z const LPCWSTR pszPassword)
         goto Done;
     }
 
-    pszExt = ::wcsstr(szDecryptedFile, L".spmbc");
+    pszExt = ::wcsstr(szDecryptedFile, L".aes");
     if (NULL == pszExt)
     {
-        ::MessageBoxW(nullptr, L"File name must have .spmbc file extension to decrypt", L"Decrypt Failed", MB_OK | MB_ICONERROR);
+        ::MessageBoxW(nullptr, L"File name must have .aes file extension to decrypt", L"Decrypt Failed", MB_OK | MB_ICONERROR);
         goto Done;
     }
     *pszExt = 0;    // truncate extension
@@ -568,7 +568,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 ofn.hwndOwner = hWnd;
                 ofn.lpstrFile = szFile;
                 ofn.nMaxFile = sizeof(szFile);
-                ofn.lpstrFilter = L"SPM encrypted file (*.spmbc)\0*.spmbc\0";
+                ofn.lpstrFilter = L"AES encrypted file (*.aes)\0*.aes\0";
                 ofn.nFilterIndex = 1;
                 ofn.lpstrFileTitle = NULL;
                 ofn.nMaxFileTitle = 0;
@@ -593,7 +593,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 ofn.hwndOwner = hWnd;
                 ofn.lpstrFile = szFile;
                 ofn.nMaxFile = sizeof(szFile);
-                ofn.lpstrFilter = L"SPM encrypted text (*.spmbc)\0*.spmbc\0All Files\0*.*\0";
+                ofn.lpstrFilter = L"AES encrypted text (*.aes)\0*.aes\0All Files\0*.*\0";
                 ofn.nFilterIndex = 1;
                 ofn.lpstrFileTitle = NULL;
                 ofn.nMaxFileTitle = 0;
@@ -625,7 +625,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 ofn.hwndOwner = hWnd;
                 ofn.lpstrFile = szFile;
                 ofn.nMaxFile = sizeof(szFile);
-                ofn.lpstrFilter = L"SPM encrypted text (*.spmbc)\0*.spmbc\0All Files\0*.*\0";
+                ofn.lpstrFilter = L"AES encrypted text (*.aes)\0*.aes\0All Files\0*.*\0";
                 ofn.nFilterIndex = 1;
                 ofn.lpstrFileTitle = NULL;
                 ofn.nMaxFileTitle = 0;
